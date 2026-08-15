@@ -5,6 +5,7 @@ import (
 	"charm.land/lipgloss/v2"
 
 	"github.com/garthdw/bubblekit/keymap"
+	"github.com/garthdw/bubblekit/numeric"
 )
 
 // ConfirmPopup is a small reusable yes/no modal, for delete and
@@ -64,6 +65,6 @@ func (c *ConfirmPopup[M]) Size(m M) (int, int) {
 	if c.MaxWidth != nil {
 		maxW = c.MaxWidth(m)
 	}
-	w := Clamp(lipgloss.Width(c.Message)+messagePadding, minWidth, maxW)
+	w := numeric.Clamp(lipgloss.Width(c.Message)+messagePadding, minWidth, maxW)
 	return w, popupHeight
 }

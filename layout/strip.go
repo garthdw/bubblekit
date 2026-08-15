@@ -1,6 +1,10 @@
 package layout
 
-import "charm.land/lipgloss/v2"
+import (
+	"charm.land/lipgloss/v2"
+
+	"github.com/garthdw/bubblekit/numeric"
+)
 
 // VisibleRange determines which contiguous run of indices [lo, hi) fits in
 // width starting the scan from offset, and whether left/right overflow
@@ -15,12 +19,7 @@ func VisibleRange(slotWidths []int, offset, width int, leftIndicator, rightIndic
 	if n == 0 {
 		return 0, 0, false, false
 	}
-	if offset < 0 {
-		offset = 0
-	}
-	if offset >= n {
-		offset = n - 1
-	}
+	offset = numeric.Clamp(offset, 0, n-1)
 	showLeft = offset > 0
 
 	avail := width
@@ -58,12 +57,7 @@ func ClampOffset(slotWidths []int, activeIndex, offset, width int, leftIndicator
 	if n == 0 || activeIndex < 0 {
 		return 0
 	}
-	if offset < 0 {
-		offset = 0
-	}
-	if offset > activeIndex {
-		offset = activeIndex
-	}
+	offset = numeric.Clamp(offset, 0, activeIndex)
 	for {
 		lo, hi, _, _ := VisibleRange(slotWidths, offset, width, leftIndicator, rightIndicator)
 		if activeIndex >= lo && activeIndex < hi {

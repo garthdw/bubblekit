@@ -18,7 +18,9 @@ go vet ./...                 # static checks
 
 ## Architecture
 
-Four independent packages, each covering one concern:
+Six independent packages, each covering one concern:
+
+- **`numeric`** — dependency-free numeric helpers shared by the rest of the module (and safe for consuming apps to use directly): `Clamp` floors then ceils a value into a range, degrading gracefully to `hi` even when `hi < lo`.
 
 - **`keymap`** — a context-scoped keybinding table (`Map`). Lookups fall through to `Parent` when a key isn't bound in the current context (Zed-style context cascade / neovim buffer-local-over-global). Used to resolve a raw key string to an action name; callers own the actual `switch` on action names.
 
@@ -40,6 +42,8 @@ Four independent packages, each covering one concern:
   - `merge.go`: `Merge` decodes user-supplied theme JSON and merges it field-by-field over a base theme. Invalid/missing fields never fail the whole merge — they silently (missing) or with a stderr warning (invalid, e.g. bad hex color) fall back to the base value for just that field.
   - `loader.go`: `Loader` resolves an app's theme from (in order) a built-in name match, an explicit file path, or `$XDG_CONFIG_HOME/<ConfigSubdir>/theme.json`. A missing/unreadable/malformed file always degrades to `Base` rather than erroring.
   - `style.go`: `Token.ApplyTo(lipgloss.Style)` applies just the token's color/attributes onto an existing style, leaving borders/padding/background untouched.
+
+- **`statusline`** — a heirline-inspired component tree for status bars: `Node` is a leaf (`Provider` renders already-styled text, `Align` places it in a Left/Center/Right zone, `Priority` orders it for dropping) or a branch (`Children`, gated as a unit by `Condition`). `Render` flattens the visible tree in document order and packs it into one or more lines of at most `width` columns, reflowing individual leaves onto additional lines instead of truncating when they overflow; `maxLines` (if > 0) caps the line count by dropping the lowest-`Priority` leaves first.
 
 ## Conventions specific to this repo
 
